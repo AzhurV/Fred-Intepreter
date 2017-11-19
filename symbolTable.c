@@ -94,3 +94,30 @@ Symbol* GetSymbol(SymbolTable* table, char* name){
 
   return NULL;
 }
+
+///Print the symbol table contents to stdout
+///@param table a pointer to the table to print
+void dumpTable(SymbolTable* table){
+  SymbolNode* cur = table->head;
+
+  printf("Symbol Table Contents\n");
+  printf("Name\tType\tValue\n");
+  printf("=====================\n");
+
+  while(cur){
+    printf("%s\t", cur->symbol->name);
+    switch(cur->symbol->type){
+    case Integer:
+      printf("integer\t%d\n", cur->symbol->value.iVal);
+      break;
+    case Float:
+      printf("float\t%.3f\n", cur->symbol->value.fVal);
+      break;
+    default:
+      printf("unknown\tunknown\n");
+    }
+    cur = cur->next;
+  }
+
+  return;
+}

@@ -2,27 +2,13 @@
 #define SYM_TABLE_H
 
 #include <stdlib.h>
-
-
-///Node within the symbol table
-typedef struct SymbolNode_ {
-  SymbolNode_* next;
-  Symbol symbol;
-} SymbolNode;
-
-
-///The symbol table
-typedef struct SymbolTable_ {
-  SymbolNode* head;
-  size_t size;
-} SymbolTable;
-
+#include <stdio.h>
+#include <string.h>
 
 ///Types a symbol can have
 typedef enum types_enum {
   Integer, Float, Unknown
 } Type;
-
 
 ///Value of a symbol can be either an int or a float
 typedef union val_union {
@@ -31,12 +17,26 @@ typedef union val_union {
 } Value;
 
 
+
 ///Symbol has a name, a type, and a value
 typedef struct Symbol_ {
   char* name;
   Type type;
   Value value;
 } Symbol;
+
+///Node within the symbol table
+typedef struct SymbolNode_ {
+  struct SymbolNode_* next;
+  Symbol* symbol;
+} SymbolNode;
+
+
+///The symbol table
+typedef struct SymbolTable_ {
+  SymbolNode* head;
+  size_t size;
+} SymbolTable;
 
 
 ///Create a new empty symbol table
@@ -49,7 +49,7 @@ SymbolTable* CreateTable(void);
 ///@param symbol a pointer to the symbol to add
 ///@returns 1 if the symbol was successfully added, 0 if
 ///  the symbol already existed in the table
-void AddSymbol(SymbolTable*, Symbol*);
+int AddSymbol(SymbolTable* table, Symbol* symbol);
 
 
 ///Update a symbol in the table
@@ -58,3 +58,10 @@ void AddSymbol(SymbolTable*, Symbol*);
 ///  the new symbol information
 ///@returns 1 if updated successfully, 0 if the symbol was not found
 Symbol* GetSymbol(SymbolTable*, char*);
+
+
+///Print the symbol table contents to stdout
+///@param table a pointer to the table
+void dumpTable(SymbolTable* table);
+
+#endif
