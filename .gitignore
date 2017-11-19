@@ -1,0 +1,5 @@
+args.*
+sym.*
+*.mak
+RUN
+prog1.fr
