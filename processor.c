@@ -46,5 +46,7 @@ void processSymbolFile(SymbolTable* table, FILE* symbolFile){
 
   }
 
+  free(line);
+
   return;
 }

@@ -16,6 +16,31 @@ SymbolTable* CreateTable(void){
   return table;
 }
 
+///Free all memory associated with a symbol
+///@param symbol a pointer to the symbol to free
+static void DestroySymbol(Symbol* symbol){
+  free(symbol->name);
+  free(symbol);
+  return;
+}
+
+///Free all memory associated with a table
+///@param table a pointer to the table to free
+void DestroyTable(SymbolTable* table){
+  SymbolNode* cur = table->head;
+  SymbolNode* next;
+
+  while(cur){
+    next = cur->next;
+    DestroySymbol(cur->symbol);
+    free(cur);
+    cur = next;
+  }
+
+  free(table);
+}
+    
+
 
 ///Add a new symbol to the table
 ///@param table the table to add a symbol to

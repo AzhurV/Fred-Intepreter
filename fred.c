@@ -53,4 +53,5 @@ int main(int argc, char** argv){
 
   
   dumpTable(table);
+  DestroyTable(table);
 }

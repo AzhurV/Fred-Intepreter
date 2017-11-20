@@ -44,6 +44,11 @@ typedef struct SymbolTable_ {
 SymbolTable* CreateTable(void);
 
 
+///Free all memory associated with a symbol table
+///@param table a pointer to the table to free
+void DestroyTable(SymbolTable* table);
+
+
 ///Add a new symbol to the table
 ///@param table the table to add a symbol to
 ///@param symbol a pointer to the symbol to add
