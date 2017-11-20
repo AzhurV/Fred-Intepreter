@@ -5,7 +5,7 @@
 #include <getopt.h>
 
 #include "symbolTable.h"
-#include "stack.h"
+#include "processor.h"
 
 ///Print the usage message for the main program
 void printUsage(){
@@ -38,7 +38,7 @@ int main(int argc, char** argv){
 	return EXIT_FAILURE;
       }
       processSymbolFile(table, symbolInput);
-      fclose(input);
+      fclose(symbolInput);
       symbolInput = NULL;
       break;
     default:
@@ -52,5 +52,5 @@ int main(int argc, char** argv){
   }
 
   
-  
+  dumpTable(table);
 }
