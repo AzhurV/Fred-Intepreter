@@ -51,6 +51,7 @@ int main(int argc, char** argv){
     input = stdin;
   }
 
+  processStatements(table, input);
   
   dumpTable(table);
   DestroyTable(table);
