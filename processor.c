@@ -54,6 +54,7 @@ void processSymbolFile(SymbolTable* table, FILE* symbolFile){
 
 ///Process a define statement, putting each symbol into the table
 ///with an initial value of 0
+///@param table a pointer to the sybol table to use
 static void processDefine(SymbolTable* table){
   const char* delim = " ,\t\n";
   char* tok;
@@ -90,6 +91,7 @@ static void processDefine(SymbolTable* table){
       symbol->value.fVal = 0;
     }
 
+    ///Symbol already exists
     if(!AddSymbol(table, symbol)){
       free(symbol->name);
       free(symbol);
@@ -100,26 +102,58 @@ static void processDefine(SymbolTable* table){
 }
 
 
+///Process a let statement
+///@param table a pointer to the symbol table to use
 static void processLet(SymbolTable* table){
-  return;
+  const char* delim = " ,\t\n";
+  char* tok;
+  Symbol* symbol;
+  Value value;
+
+  tok = strtok(NULL, delim);
+  symbol = GetSymbol(table, tok);
+
+  if(!symbol){
+    fprintf(stderr, "let error: no symbol %s in table\n", tok);
+    return;
+  }
+
+  ///skip past :=
+  tok = strtok(NULL, delim);
+
+  value = evalExpression(table);
 }
 
 
+///Process an if statement
+///@param table a pointer to the symbol table to use
 static void processIf(SymbolTable* table){
   return;
 }
 
 
+///Process a print statement
+///@param table a pointer to the symbol table to use
 static void processPrint(SymbolTable* table){
   return;
 }
 
 
+///Process a display statement
+///@param table a pointer to the symbol table to use
 static void processDisplay(SymbolTable* table){
-  return;
+  const char* delim = " \t\n";
+  char* tok = NULL;
+
+  while((tok = strtok(NULL, delim)){
+
+    }
 }
 
 
+///Process statements from an input stream
+///@param table the symbol table to use while processing
+///@param input the input stream to read from
 void processStatements(SymbolTable* table, FILE* input){
   char* line = NULL;
   size_t len = 0;
@@ -127,7 +161,11 @@ void processStatements(SymbolTable* table, FILE* input){
   char* tok;
   const char* delim = " \t";
 
+  printf(">");
+  
   while(getline(&line, &len, input) != -1){
+    printf(":::%s\n", line);
+    
     tok = strtok(line, delim);
 
     if(strcmp("define", tok) == 0){
@@ -151,6 +189,8 @@ void processStatements(SymbolTable* table, FILE* input){
 
     free(line);
     line = NULL;
+
+    printf(">");
   }
 
   free(line);

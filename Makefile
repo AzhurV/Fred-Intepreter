@@ -1,5 +1,5 @@
 #
-# Created by gmakemake (Ubuntu Jul 25 2014) on Mon Nov 20 08:54:12 2017
+# Created by gmakemake (Ubuntu Jul 25 2014) on Mon Nov 20 12:04:49 2017
 #
 
 #
@@ -50,13 +50,13 @@ CLIBFLAGS = -lm
 
 
 CPP_FILES =	
-C_FILES =	fred.c processor.c stack.c symbolTable.c
+C_FILES =	evaluate.c fred.c processor.c stack.c symbolTable.c
 PS_FILES =	
 S_FILES =	
-H_FILES =	processor.h stack.h symbolTable.h
+H_FILES =	evaluate.h processor.h stack.h symbolTable.h
 SOURCEFILES =	$(H_FILES) $(CPP_FILES) $(C_FILES) $(S_FILES)
 .PRECIOUS:	$(SOURCEFILES)
-OBJFILES =	processor.o stack.o symbolTable.o 
+OBJFILES =	evaluate.o processor.o stack.o symbolTable.o 
 
 #
 # Main targets
@@ -71,8 +71,9 @@ fred:	fred.o $(OBJFILES)
 # Dependencies
 #
 
-fred.o:	processor.h stack.h symbolTable.h
-processor.o:	processor.h stack.h symbolTable.h
+evaluate.o:	evaluate.h stack.h
+fred.o:	evaluate.h processor.h stack.h symbolTable.h
+processor.o:	evaluate.h processor.h stack.h symbolTable.h
 stack.o:	stack.h
 symbolTable.o:	symbolTable.h
 

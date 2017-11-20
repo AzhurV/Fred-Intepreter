@@ -1,0 +1,7 @@
+///file:evaluate.c
+///description:functions for evaluating arithmetic and boolean expressions
+///author: Azhur Viano : avv8047
+
+
+#include "evaluate.h"
+

@@ -57,11 +57,7 @@ void DestroyTable(SymbolTable* table);
 int AddSymbol(SymbolTable* table, Symbol* symbol);
 
 
-///Update a symbol in the table
-///@param table a pointer to the symbol table
-///@param symbol a pointer to the symbol to update, including
-///  the new symbol information
-///@returns 1 if updated successfully, 0 if the symbol was not found
+
 Symbol* GetSymbol(SymbolTable*, char*);
 
 

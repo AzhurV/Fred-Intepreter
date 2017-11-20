@@ -5,8 +5,10 @@
 #include <stdlib.h>
 
 #include "symbolTable.h"
-#include "stack.h"
+#include "evaluate.h"
 
 void processSymbolFile(SymbolTable* table, FILE* symbolFile);
+
+void processStatements(SymbolTable* table, FILE* input);
 
 #endif
