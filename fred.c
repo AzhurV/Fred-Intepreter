@@ -30,7 +30,7 @@ int main(int argc, char** argv){
   
 
   //Check for the correct number of arguments
-  if(argc - 1 % 2 != 0 || argc > 5){
+  if((argc - 1) % 2 != 0 || argc > 5){
     fprintf(stderr, "Wrong number of arguments\n");
     printUsage();
     return EXIT_FAILURE;

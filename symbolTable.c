@@ -136,7 +136,7 @@ void dumpTable(SymbolTable* table){
       printf("integer\t%d\n", cur->symbol->value.iVal);
       break;
     case Float:
-      printf("float\t%.3f\n", cur->symbol->value.fVal);
+      printf("real\t%.3f\n", cur->symbol->value.fVal);
       break;
     default:
       printf("unknown\tunknown\n");

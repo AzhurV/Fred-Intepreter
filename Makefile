@@ -1,5 +1,5 @@
 #
-# Created by gmakemake (Ubuntu Jul 25 2014) on Mon Nov 20 12:04:49 2017
+# Created by gmakemake (Ubuntu Jul 25 2014) on Tue Nov 21 11:28:42 2017
 #
 
 #
@@ -71,7 +71,7 @@ fred:	fred.o $(OBJFILES)
 # Dependencies
 #
 
-evaluate.o:	evaluate.h stack.h
+evaluate.o:	evaluate.h stack.h symbolTable.h
 fred.o:	evaluate.h processor.h stack.h symbolTable.h
 processor.o:	evaluate.h processor.h stack.h symbolTable.h
 stack.o:	stack.h

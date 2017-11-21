@@ -12,10 +12,10 @@
 ///Create a new empty stack
 ///@returns a pointer to the new empty stack
 Stack* CreateStack(void){
-  Stack* stack = malloc(sizeof(stack));
+  Stack* stack = malloc(sizeof(Stack));
   stack->size = 0;
   stack->capacity = INITIAL_CAPACITY;
-  stack->data = malloc(sizeof(void*) * 20);
+  stack->data = malloc(sizeof(void*) * INITIAL_CAPACITY);
 
   return stack;
 }
@@ -23,7 +23,7 @@ Stack* CreateStack(void){
 
 ///Delete the stack
 ///@param stack pointer to the stack to be deleted
-void DeleteStack(Stack* stack){
+void DestroyStack(Stack* stack){
   free(stack->data);
   free(stack);
   return;

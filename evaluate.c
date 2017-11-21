@@ -35,6 +35,7 @@ static void DestroyTokenList(TokenList* tokList){
   for(i = 0; i < tokList->size; i++){
     free(tokList->list[i]);
   }
+  free(tokList->list);
   free(tokList);
   return;
 }
@@ -88,7 +89,7 @@ static TokenList* convertToPostfix(SymbolTable* table){
   Token* tempToken = NULL;
 
   //while there are still tokens remaining
-  while((tokString == strtok(NULL, delim))){
+  while((tokString = strtok(NULL, delim))){
     firstCh = tokString[0];
     token = malloc(sizeof(Token));
       
@@ -104,6 +105,7 @@ static TokenList* convertToPostfix(SymbolTable* table){
 	token->valType = Integer;
 	token->value.iVal = atoi(tokString);
       }
+      AddToken(postExpression, token);
     }
     //token is a symbol identifier
     else if(isalpha(firstCh)){
@@ -183,28 +185,119 @@ static TokenList* convertToPostfix(SymbolTable* table){
 	fprintf(stderr, "Unknown operator %s\n", tokString);
 	DestroyTokenList(postExpression);
 	free(token);
-	free(stack);
+	DestroyStack(stack);
 	return NULL;
       }
     }
   }
 
-  free(stack);
+  while(!EmptyStack(stack)){
+    token = (Token*) PopStack(stack);
+    AddToken(postExpression, token);
+  }
+
+  DestroyStack(stack);
   return postExpression;
 }
 
 
+//Perform the operation specified by operator on the 2 operands
+//@param operator the token with the operation to perform
+//@param operand1 the token with the first operand value
+//@param operand2 the token with the second operand value
+static void performOperation(Token* operator,
+			     Token* operand1,
+			     Token* operand2){
+  //perform type conversions if necessary
+  if(operand2->valType != operand2->valType){
+    operator->valType = Float;
+    if(operand2->valType == Integer){
+      operand2->valType = Float;
+      operand2->value.fVal = (float) operand2->value.iVal;
+    }
+    else{
+      operand1->valType = Float;
+      operand1->value.fVal = (float) operand1->value.iVal;
+    }
+  }
+  else{
+    operator->valType = Integer;
+  }
+
+  int isFloat = (operand1->valType == Float);
+
+  switch(operator->value.iVal){
+  case '+':
+    if(isFloat){
+      operator->value.fVal =
+	operand1->value.fVal + operand2->value.fVal;
+    }
+    else{
+      operator->value.iVal =
+	operand1->value.iVal + operand2->value.iVal;
+    }
+    break;
+  case '-':
+    if(isFloat){
+      operator->value.fVal =
+	operand1->value.fVal - operand2->value.fVal;
+    }
+    else{
+      operator->value.iVal =
+	operand1->value.iVal - operand2->value.iVal;
+    }
+    break;
+  case '*':
+    if(isFloat){
+      operator->value.fVal =
+	operand1->value.fVal * operand2->value.fVal;
+    }
+    else{
+      operator->value.iVal =
+	operand1->value.iVal * operand2->value.iVal;
+    }
+    break;
+  case '/':
+    if(isFloat){
+      operator->value.fVal =
+	operand1->value.fVal / operand2->value.fVal;
+    }
+    else{
+      operator->value.iVal =
+	operand1->value.iVal / operand2->value.iVal;
+    }
+    break;
+  case '%':
+    if(isFloat){
+    }
+    else{
+      operator->value.iVal =
+	operand1->value.iVal % operand2->value.iVal;
+    }
+    break;
+  default:
+    break;
+  }
+
+  operator->type = Operand;
+
+  return;
+}
+
 
 //Evaluate an infix expression
 //@param table the symbol table to use
-//@returns a value struct containing an int or float, or NULL if the evaluation failed
-Value evaluateExpression(SymbolTable* table){
+//@returns a token struct  containing an int or float,
+//  or NULL if the evaluation failed
+Token* evaluateExpression(SymbolTable* table){
   
   TokenList* postExpression = convertToPostfix(table);
   Token* token;
+  Token* operand1;
+  Token* operand2;
   Stack* stack = CreateStack();
 
-  int i;
+  size_t i;
 
   for(i = 0; i < postExpression->size; i++){
     token = postExpression->list[i];
@@ -212,8 +305,23 @@ Value evaluateExpression(SymbolTable* table){
       PushStack(stack, (void*) token);
     }
     else{
-      switch(token->value.iVal){
-	
+      operand2 = (Token*) PopStack(stack);
+      operand1 = (Token*) PopStack(stack);
+      //perform operation and store value in operator token
+      performOperation(token, operand1, operand2);
+      //operator token now has new value; push it onto the stack
+      PushStack(stack, (void*) token);
       }
   }
+
+  
+  token = (Token*) PopStack(stack);
+
+  Token* returnToken = malloc(sizeof(Token));
+  returnToken->valType = token->valType;
+  returnToken->value = token->value;
+
+  DestroyTokenList(postExpression);
+  DestroyStack(stack);
+  return returnToken;
 }

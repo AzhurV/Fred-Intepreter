@@ -20,7 +20,7 @@ void processSymbolFile(SymbolTable* table, FILE* symbolFile){
     if(strcmp("integer", tok) == 0){
       symbol->type = Integer;
     }
-    else if(strcmp("float", tok) == 0){
+    else if(strcmp("real", tok) == 0){
       symbol->type = Float;
     }
     else{
@@ -66,11 +66,12 @@ static void processDefine(SymbolTable* table){
   if(strcmp("integer", tok) == 0){
     type = Integer;
   }
-  else if(strcmp("float", tok) == 0){
+  else if(strcmp("real", tok) == 0){
     type = Float;
   }
   else{
-    type = Unknown;
+    fprintf(stderr, "Unknown type: %s\n", strtok);
+    return;
   }
 
   while((tok = strtok(NULL, delim)) != NULL){
@@ -108,7 +109,7 @@ static void processLet(SymbolTable* table){
   const char* delim = " ,\t\n";
   char* tok;
   Symbol* symbol;
-  Value value;
+  Token* returnToken;
 
   tok = strtok(NULL, delim);
   symbol = GetSymbol(table, tok);
@@ -121,7 +122,27 @@ static void processLet(SymbolTable* table){
   ///skip past :=
   tok = strtok(NULL, delim);
 
-  value = evalExpression(table);
+  returnToken = evaluateExpression(table);
+
+  if(symbol->type == Integer){
+    if(returnToken->valType != Integer){
+      symbol->value.iVal = (int) returnToken->value.fVal;
+    }
+    else{
+      symbol->value.iVal = returnToken->value.iVal;
+    }
+  }
+  else{
+    if(returnToken->valType != Float){
+      symbol->value.fVal = (float) returnToken->value.iVal;
+    }
+    else{
+      symbol->value.fVal = returnToken->value.fVal;
+    }
+  }
+
+  free(returnToken);
+  return;
 }
 
 
@@ -142,12 +163,7 @@ static void processPrint(SymbolTable* table){
 ///Process a display statement
 ///@param table a pointer to the symbol table to use
 static void processDisplay(SymbolTable* table){
-  const char* delim = " \t\n";
-  char* tok = NULL;
-
-  while((tok = strtok(NULL, delim)){
-
-    }
+  return;
 }
 
 
