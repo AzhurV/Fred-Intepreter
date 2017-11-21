@@ -20,13 +20,11 @@ typedef struct {
 ///@returns a pointer to the new empty stack
 Stack* CreateStack(void);
 
-//Destroy the stack; data on the stack is not freed
-//@param stack the stack to destroy
-void DestroyStack(Stack* stack);
+
 
 ///Delete the stack
 ///@param stack the stack to be deleted
-void DeleteStack(Stack* stack);
+void DestroyStack(Stack* stack);
 
 ///Check whether the stack is empty
 ///@param stack a pointer to the stack to check

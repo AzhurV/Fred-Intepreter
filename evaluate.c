@@ -74,8 +74,9 @@ static int isFloat(char* str){
 
 //Convert a string to a sequence of tokens in postfix notation
 //@param table the symbol table to use
+//@param expression the expression as a null-terminated string
 //@returns a sequence of tokens in postfix notation or NULL if any token is not recognized
-static TokenList* convertToPostfix(SymbolTable* table){
+static TokenList* convertToPostfix(SymbolTable* table, char* expression){
   TokenList* postExpression = CreateTokenList();
   Stack* stack = CreateStack();
 
@@ -88,8 +89,10 @@ static TokenList* convertToPostfix(SymbolTable* table){
   //used to store tokens popped from the stack
   Token* tempToken = NULL;
 
-  //while there are still tokens remaining
-  while((tokString = strtok(NULL, delim))){
+  //while there are still tokens remaining, read the next
+  for(tokString = strtok(expression, delim);
+      tokString;
+      tokString = strtok(NULL, delim)){
     firstCh = tokString[0];
     token = malloc(sizeof(Token));
       
@@ -289,9 +292,10 @@ static void performOperation(Token* operator,
 //@param table the symbol table to use
 //@returns a token struct  containing an int or float,
 //  or NULL if the evaluation failed
-Token* evaluateExpression(SymbolTable* table){
+Token* evaluateExpression(SymbolTable* table, char* expression){
   
-  TokenList* postExpression = convertToPostfix(table);
+  TokenList* postExpression = convertToPostfix(table, expression);
+  
   Token* token;
   Token* operand1;
   Token* operand2;

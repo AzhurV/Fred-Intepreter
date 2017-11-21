@@ -80,4 +80,9 @@ int main(int argc, char** argv){
   
   dumpTable(table);
   DestroyTable(table);
+
+  //if a file was opened for reading statements from, close it
+  if(input != stdin){
+    fclose(input);
+  }
 }

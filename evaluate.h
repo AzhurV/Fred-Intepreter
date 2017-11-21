@@ -20,6 +20,8 @@ typedef struct Token_ {
   Value value;
 } Token;
 
+Token* evaluateExpression(SymbolTable* table, char* expression);
+
 
 
 #endif 

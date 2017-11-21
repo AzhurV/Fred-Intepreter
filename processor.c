@@ -1,5 +1,6 @@
 #include "processor.h"
 
+//Process a file of symbols and store them in the table
 void processSymbolFile(SymbolTable* table, FILE* symbolFile){
   const char* delim = " \t";
   char* line = NULL;
@@ -24,7 +25,9 @@ void processSymbolFile(SymbolTable* table, FILE* symbolFile){
       symbol->type = Float;
     }
     else{
-      symbol->type = Unknown;
+      fprintf(stderr, "Error processing symbol file: unknown type - %s\n", tok);
+      free(symbol);
+      continue;
     }
 
     tok = strtok(NULL, delim);
@@ -70,7 +73,7 @@ static void processDefine(SymbolTable* table){
     type = Float;
   }
   else{
-    fprintf(stderr, "Unknown type: %s\n", strtok);
+    fprintf(stderr, "Unknown type: %s\n", tok);
     return;
   }
 
@@ -105,13 +108,13 @@ static void processDefine(SymbolTable* table){
 
 ///Process a let statement
 ///@param table a pointer to the symbol table to use
-static void processLet(SymbolTable* table){
+static void processLet(SymbolTable* table, char* expression){
   const char* delim = " ,\t\n";
   char* tok;
   Symbol* symbol;
   Token* returnToken;
 
-  tok = strtok(NULL, delim);
+  tok = strtok(expression, delim);
   symbol = GetSymbol(table, tok);
 
   if(!symbol){
@@ -121,8 +124,11 @@ static void processLet(SymbolTable* table){
 
   ///skip past :=
   tok = strtok(NULL, delim);
+  //get rest of line to evaluate
+  tok = strtok(NULL, "\n");
+  
 
-  returnToken = evaluateExpression(table);
+  returnToken = evaluateExpression(table, tok);
 
   if(symbol->type == Integer){
     if(returnToken->valType != Integer){
@@ -146,70 +152,147 @@ static void processLet(SymbolTable* table){
 }
 
 
-///Process an if statement
-///@param table a pointer to the symbol table to use
-static void processIf(SymbolTable* table){
+//Process an if statement
+//@param table a pointer to the symbol table to use
+//@returns 1 if statement is true, else 0 
+static int processIf(SymbolTable* table, char* clause){
   return;
 }
 
 
+
 ///Process a print statement
-///@param table a pointer to the symbol table to use
-static void processPrint(SymbolTable* table){
+static void processPrint(void){
+  //get entire line
+  char* str = strtok(NULL, "\n");
+  if(!str){
+    return;
+  }
+  
+  int i;
+
+  for(i = 0; str[i] != '\0'; i++){
+    if(str[i] == '\\'){
+      i++;
+      switch(str[i]){
+      case 'n':
+	putchar((unsigned char) '\n');
+	break;
+      case 't':
+	putchar((unsigned char) '\t');
+	break;
+      case '\\':
+	putchar((unsigned char) '\t');
+	break;
+      default:
+	putchar((unsigned char) ' ');
+      }
+    }
+    else{
+      putchar((unsigned char) str[i]);
+    }
+  }
+
   return;
 }
 
 
 ///Process a display statement
 ///@param table a pointer to the symbol table to use
-static void processDisplay(SymbolTable* table){
-  return;
+static void processDisplay(SymbolTable* table, char* expression){
+  char* delim = " \t,\n";
+
+  char* tokString;
+
+  for(tokString = strtok(expression, delim);
+      tokString;
+      tokString = strtok(NULL, delim)){
+    //token is a variable identifier
+    if(isalpha(tokString[0])){
+      Symbol* symbol = GetSymbol(table, tokString);
+      if(symbol){
+	if(symbol->type == Float){
+
+	}
+	else{
+
+	}
+      }
+      else{
+
+      }
+    }
+    //token is a number
+    else if(isdigit(tokString[0])){
+
+    }
+    else{
+
+    }
+  }
 }
 
 
-///Process statements from an input stream
-///@param table the symbol table to use while processing
-///@param input the input stream to read from
-void processStatements(SymbolTable* table, FILE* input){
-  char* line = NULL;
-  size_t len = 0;
-  
-  char* tok;
-  const char* delim = " \t";
+static void executeStatement(SymbolTable* table, char* statement){
 
-  printf(">");
-  
-  while(getline(&line, &len, input) != -1){
-    printf(":::%s\n", line);
-    
-    tok = strtok(line, delim);
+  const char* delim = " \t\n";
+  char* tok = strtok(statement, delim);
 
-    if(strcmp("define", tok) == 0){
-      processDefine(table);
+  if(strcmp("define", tok) == 0){
+    processDefine(table);
+  }
+  else if(strcmp("let", tok) == 0){
+    char* expression = strtok(NULL, "\n");
+    processLet(table, expression);
+  }
+  else if(strcmp("if", tok) == 0){
+    char* ifClause = strtok(NULL, "\n");
+    char* thenClause = ifClause;
+    for(; strncmp(" then ", thenClause, 6) != 0; thenClause++){
+      continue;
     }
-    else if(strcmp("let", tok) == 0){
-      processLet(table);
+    *thenClause = '\0';
+    thenClause += 6;
+    if(processIf(table, ifClause)){
+      executeStatement(table, thenClause);
     }
-    else if(strcmp("if", tok) == 0){
-      processIf(table);
-    }
-    else if(strcmp("prt", tok) == 0){
-      processPrint(table);
-    }
-    else if(strcmp("display", tok) == 0){
-      processDisplay(table);
-    }
-    else{
-      fprintf(stderr, "Unknown statement %s\n", tok);
+  }
+  else if(strcmp("prt", tok) == 0){
+    processPrint();
+  }
+  else if(strcmp("display", tok) == 0){
+    char* expression = strtok(NULL, "\n");
+    processDisplay(table, expression);
+  }
+  else{
+    fprintf(stderr, "Unknown statement %s\n", tok);
+  }
+}
+
+
+  ///Process statements from an input stream
+  ///@param table the symbol table to use while processing
+  ///@param input the input stream to read from
+  void processStatements(SymbolTable* table, FILE* input){
+    char* line = NULL;
+    size_t len = 0;
+  
+    printf(">");
+
+    //get lines from input; lines are dynamically allocated by getline
+    while(getline(&line, &len, input) != -1){
+      printf(":::%s\n", line);
+
+      executeStatement(table, line);
+
+      //free dynamically allocated line
+      free(line);
+      line = NULL;
+
+      printf(">");
     }
 
     free(line);
-    line = NULL;
 
-    printf(">");
+    return;
   }
-
-  free(line);
-
-  return;
-}
