@@ -1,5 +1,9 @@
 #include "processor.h"
 
+//constants for boolean operators in if statements
+typedef enum bool_ops {GT, LT, EQ}
+  BoolOperator;
+
 //Process a file of symbols and store them in the table
 void processSymbolFile(SymbolTable* table, FILE* symbolFile){
   const char* delim = " \t";
@@ -154,9 +158,99 @@ static void processLet(SymbolTable* table, char* expression){
 
 //Process an if statement
 //@param table a pointer to the symbol table to use
+//@param clause the conditional clause to use
 //@returns 1 if statement is true, else 0 
 static int processIf(SymbolTable* table, char* clause){
-  return;
+  char* compOperator = clause;
+  BoolOperator operator;
+  //indicates whether or not to invert the result with the ! operator
+  int invert = 0;
+  //truth value to be returned
+  int returnVal = 0;
+  //find the boolean operator in the clause
+  while(*compOperator != '!' && *compOperator != '='
+	&& *compOperator != '>' && *compOperator != '<'){
+    compOperator++;
+  }
+
+  if(*compOperator == '!'){
+    invert = 1;
+    compOperator = '\0';
+    compOperator++;
+  }
+  switch(*compOperator){
+  case '=':
+    operator = EQ;
+    break;
+  case '<':
+    operator = LT;
+    break;
+  case '>':
+    operator = GT;
+    break;
+  default:
+    fprintf(stderr, "Unknown boolean operator %c\n", *compOperator);
+    return 0;
+  }
+
+  *compOperator = '\0';
+  compOperator += 2;
+
+  Token* leftResult = evaluateExpression(table, clause);
+  Token* rightResult = evaluateExpression(table, compOperator);
+  int isFloat;
+
+  //perform type conversions if necessary
+  if(leftResult->valType != rightResult->valType){
+    if(leftResult->valType == Float){
+      rightResult->valType = Float;
+      rightResult->value.fVal = (float) rightResult->value.iVal;
+    }
+    else{
+      leftResult->valType = Float;
+      leftResult->value.fVal = (float) leftResult->value.iVal;
+    }
+    isFloat = 1;
+  }
+
+  //perform comparision and set returnVal
+  switch(operator){
+  case EQ:
+    if(isFloat){
+      returnVal = (leftResult->value.fVal == rightResult->value.fVal);
+    }
+    else{
+      returnVal = (leftResult->value.iVal == rightResult->value.iVal);
+    }
+    break;
+  case GT:
+    if(isFloat){
+      returnVal = (leftResult->value.fVal > rightResult->value.fVal);
+    }
+    else{
+      returnVal = (leftResult->value.iVal > rightResult->value.iVal);
+    }
+    break;
+  case LT:
+    if(isFloat){
+      returnVal = (leftResult->value.fVal < rightResult->value.fVal);
+    }
+    else{
+      returnVal = (leftResult->value.iVal < rightResult->value.iVal);
+    }
+    break;
+  default:
+    break;
+  }
+
+  free(leftResult);
+  free(rightResult);
+  //! operator, so invert truth value
+  if(invert){
+    return (!returnVal);
+  }
+  
+  return returnVal;
 }
 
 
@@ -247,11 +341,14 @@ static void executeStatement(SymbolTable* table, char* statement){
   }
   else if(strcmp("if", tok) == 0){
     char* ifClause = strtok(NULL, "\n");
-    char* thenClause = ifClause;
-    for(; strncmp(" then ", thenClause, 6) != 0; thenClause++){
-      continue;
+    char* thenClause = strstr(ifClause, " then ");
+    if(!thenClause){
+      fprintf(stderr, "No then clause found for if clause\n");
+      return;
     }
+    //seperate then clause from if clause so processing with strtok behaves correctly
     *thenClause = '\0';
+    //move past then statement to beginning of clause
     thenClause += 6;
     if(processIf(table, ifClause)){
       executeStatement(table, thenClause);
@@ -264,6 +361,7 @@ static void executeStatement(SymbolTable* table, char* statement){
     char* expression = strtok(NULL, "\n");
     processDisplay(table, expression);
   }
+  //unknown statement keyword; print error and do nothing
   else{
     fprintf(stderr, "Unknown statement %s\n", tok);
   }

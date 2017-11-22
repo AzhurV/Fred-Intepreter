@@ -122,6 +122,7 @@ static TokenList* convertToPostfix(SymbolTable* table, char* expression){
       }
       token->valType = symbol->type;
       token->value = symbol->value;
+      token->type = Operand;
       AddToken(postExpression, token);
     }
     //token is an operator or parenthesis
