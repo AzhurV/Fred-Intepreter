@@ -60,7 +60,7 @@ static void AddToken(TokenList* tokList, Token* token){
 //Check whether a string is a float
 //@param str a null terminated string
 //@returns 1 if the string is a float, 0 otherwise
-static int isFloat(char* str){
+int isFloat(char* str){
   int i;
 
   for(i = 0; str[i]; i++){
@@ -117,6 +117,7 @@ static TokenList* convertToPostfix(SymbolTable* table, char* expression){
       if(!symbol){
 	fprintf(stderr, "Error: symbol %s not found in table\n",
 		tokString);
+	free(token);
 	DestroyTokenList(postExpression);
 	return NULL;
       }
@@ -296,6 +297,11 @@ static void performOperation(Token* operator,
 Token* evaluateExpression(SymbolTable* table, char* expression){
   
   TokenList* postExpression = convertToPostfix(table, expression);
+
+  //error converting to postfix; return
+  if(!postExpression){
+    return NULL;
+  }
   
   Token* token;
   Token* operand1;

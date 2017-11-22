@@ -20,6 +20,8 @@ typedef struct Token_ {
   Value value;
 } Token;
 
+int isFloat(char* str);
+
 Token* evaluateExpression(SymbolTable* table, char* expression);
 
 

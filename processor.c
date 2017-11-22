@@ -134,6 +134,11 @@ static void processLet(SymbolTable* table, char* expression){
 
   returnToken = evaluateExpression(table, tok);
 
+  //error processing let expression; return
+  if(!returnToken){
+    return;
+  }
+
   if(symbol->type == Integer){
     if(returnToken->valType != Integer){
       symbol->value.iVal = (int) returnToken->value.fVal;
@@ -198,7 +203,7 @@ static int processIf(SymbolTable* table, char* clause){
 
   Token* leftResult = evaluateExpression(table, clause);
   Token* rightResult = evaluateExpression(table, compOperator);
-  int isFloat;
+  int isFloat = 0;
 
   //perform type conversions if necessary
   if(leftResult->valType != rightResult->valType){
@@ -298,6 +303,8 @@ static void processDisplay(SymbolTable* table, char* expression){
 
   char* tokString;
 
+  int multiplier = 1;
+
   for(tokString = strtok(expression, delim);
       tokString;
       tokString = strtok(NULL, delim)){
@@ -306,24 +313,37 @@ static void processDisplay(SymbolTable* table, char* expression){
       Symbol* symbol = GetSymbol(table, tokString);
       if(symbol){
 	if(symbol->type == Float){
-
+	  printf(" %.3f ", symbol->value.fVal);
 	}
 	else{
-
+	  printf(" %d ", symbol->value.iVal);
 	}
       }
       else{
-
+	fprintf(stderr, "\nError: symbol %s not found in symbol table\n", tokString);
       }
     }
     //token is a number
-    else if(isdigit(tokString[0])){
-
+    else if(isdigit(tokString[0]) || tokString[0] == '-'){
+      if(tokString[0] == '-'){
+	multiplier = -1;
+	tokString++;
+      }
+      if(isFloat(tokString)){
+	float fval = atof(tokString);
+        printf(" %.3f ", multiplier * fval);
+      }
+      else{
+	int ival = atoi(tokString);
+	printf(" %d ", multiplier * ival);
+      }
     }
     else{
-
+      fprintf(stderr, "\nError: invalid token %s\n", tokString);
     }
   }
+  printf("\n");
+  return;
 }
 
 
