@@ -62,7 +62,7 @@ void processSymbolFile(SymbolTable* table, FILE* symbolFile){
     }
 
     tok = strtok(NULL, delim);
-    symbol->name = strdup(tok);
+    symbol->name = strndup(tok, MAX_SYM_LEN);
 
     tok = strtok(NULL, delim);
     
@@ -117,7 +117,7 @@ static void processDefine(SymbolTable* table){
       return;
     }
     symbol = malloc(sizeof(Symbol));
-    symbol->name = strdup(tok);
+    symbol->name = strndup(tok, MAX_SYM_LEN);
     symbol->type = type;
     if(type == Integer){
       symbol->value.iVal = 0;

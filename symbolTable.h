@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#define MAX_SYM_LEN 7
+
 ///Types a symbol can have
 typedef enum types_enum {
   Integer, Float, Unknown

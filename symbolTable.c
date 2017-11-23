@@ -5,6 +5,7 @@
 #include "symbolTable.h"
 
 
+
 ///Create a new empty symbol table
 ///@returns a pointer to the new symbol table
 SymbolTable* CreateTable(void){
@@ -111,7 +112,7 @@ int updateSymbol(SymbolTable* table, Symbol* symbol){
 Symbol* GetSymbol(SymbolTable* table, char* name){
   SymbolNode* cur = table->head;
   while(cur){
-    if(strcmp(cur->symbol->name, name) == 0){
+if(strncmp(cur->symbol->name, name, MAX_SYM_LEN ) == 0){
       return cur->symbol;
     }
     cur = cur->next;
