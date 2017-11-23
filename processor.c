@@ -6,30 +6,27 @@ typedef enum bool_ops {GT, LT, EQ}
 
 static int roundEven(float f){
   float diff = f - (int) f;
+  int addend = 1;
 
   //make diff positive
   if(diff < 0){
     diff *= -1.0f;
+    addend = -1;
   }
   
   if(diff < 0.5f){
     return (int) f;
   }
   else if(diff > 0.5f){
-    if(f < 0){
-      return (int) f - 1.0f;
-    }
-    else{
-      return (int) f + 1.0f;
-    }
+    return (int) (f + addend);
   }
   else{
     int remainder = ((int) (f + 1.0f)) % 2;
     if(remainder){
-      return (int) f - 1.0f;
+      return (int) (f - addend);
     }
     else{
-      return (int) f + 1.0f;
+      return (int) (f + addend);
     }
   }
 }
