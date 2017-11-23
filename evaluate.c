@@ -214,7 +214,7 @@ static void performOperation(Token* operator,
 			     Token* operand1,
 			     Token* operand2){
   //perform type conversions if necessary
-  if(operand2->valType != operand2->valType){
+  if(operand1->valType != operand2->valType){
     operator->valType = Float;
     if(operand2->valType == Integer){
       operand2->valType = Float;
@@ -226,7 +226,7 @@ static void performOperation(Token* operator,
     }
   }
   else{
-    operator->valType = Integer;
+    operator->valType = operand1->valType;
   }
 
   int isFloat = (operand1->valType == Float);

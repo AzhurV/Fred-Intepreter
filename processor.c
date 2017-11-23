@@ -4,6 +4,36 @@
 typedef enum bool_ops {GT, LT, EQ}
   BoolOperator;
 
+static int roundEven(float f){
+  float diff = f - (int) f;
+
+  //make diff positive
+  if(diff < 0){
+    diff *= -1.0f;
+  }
+  
+  if(diff < 0.5f){
+    return (int) f;
+  }
+  else if(diff > 0.5f){
+    if(f < 0){
+      return (int) f - 1.0f;
+    }
+    else{
+      return (int) f + 1.0f;
+    }
+  }
+  else{
+    int remainder = ((int) (f + 1.0f)) % 2;
+    if(remainder){
+      return (int) f - 1.0f;
+    }
+    else{
+      return (int) f + 1.0f;
+    }
+  }
+}
+
 //Process a file of symbols and store them in the table
 void processSymbolFile(SymbolTable* table, FILE* symbolFile){
   const char* delim = " \t";
@@ -141,7 +171,7 @@ static void processLet(SymbolTable* table, char* expression){
 
   if(symbol->type == Integer){
     if(returnToken->valType != Integer){
-      symbol->value.iVal = (int) returnToken->value.fVal;
+      symbol->value.iVal = roundEven(returnToken->value.fVal);
     }
     else{
       symbol->value.iVal = returnToken->value.iVal;
@@ -296,8 +326,9 @@ static void processPrint(void){
 }
 
 
-///Process a display statement
-///@param table a pointer to the symbol table to use
+//Process a display statement
+//@param table a pointer to the symbol table to use
+//@param expression the string containing the elements to display
 static void processDisplay(SymbolTable* table, char* expression){
   char* delim = " \t,\n";
 
