@@ -22,10 +22,17 @@ void printUsage(){
 }
 
 
+//Set up symbol table, reading symbols from the symbol file if provided, 
+//  and then process statements from standard input or
+//  a program fileif provided
 int main(int argc, char** argv){
+  //used to store options from getop
   int c;
+  //table to use while processing
   SymbolTable* table = CreateTable();
+  //stream for input statements
   FILE* input = NULL;
+  //stream for symbols from a file
   FILE* symbolInput = NULL;
   
 
@@ -38,6 +45,7 @@ int main(int argc, char** argv){
   
   while((c = getopt(argc, argv, "f:s:")) != -1){
     switch(c){
+    //program file
     case 'f':
       //Check if a program file was already provided
       if(input){
@@ -50,6 +58,7 @@ int main(int argc, char** argv){
 	return EXIT_FAILURE;
       }
       break;
+    //symbol file
     case 's':
       //Check if a symbol file was already provided
       if(symbolInput){
@@ -61,6 +70,7 @@ int main(int argc, char** argv){
 	fprintf(stderr, "Error in opening symbol file %s\n", optarg);
 	return EXIT_FAILURE;
       }
+      //read symbols from the file into the table
       processSymbolFile(table, symbolInput);
       fclose(symbolInput);
       symbolInput = NULL;
@@ -76,9 +86,12 @@ int main(int argc, char** argv){
     input = stdin;
   }
 
+  //process program statements until EOF is reached 
   processStatements(table, input);
-  
+
+  //print table contents
   dumpTable(table);
+  
   DestroyTable(table);
 
   //if a file was opened for reading statements from, close it

@@ -6,6 +6,7 @@
 #include "evaluate.h"
 
 
+//struct to represent a sequence of tokens
 typedef struct TokenList_ {
   //sequence of tokens
   Token** list;
@@ -72,14 +73,35 @@ int isFloat(char* str){
 }
 
 
+//Check whether two floats can have the modulo operation performed, i.e
+//  that the fractional part of both is 0
+//@param dividend the dividend token
+//@param divisor the divisor token
+//@returns 1 if modulo can be performed, 0 otherwise
+static int verifyModulo(Token* dividend, Token* divisor){
+  float f = dividend->value.fVal;
+  if((f - (int) f) != 0){
+    return 0;
+  }
+  f = divisor->value.fVal;
+  if((f - (int) f) != 0){
+    return 0;
+  }
+  return 1;
+}
+
+
 //Convert a string to a sequence of tokens in postfix notation
 //@param table the symbol table to use
 //@param expression the expression as a null-terminated string
 //@returns a sequence of tokens in postfix notation or NULL if any token is not recognized
 static TokenList* convertToPostfix(SymbolTable* table, char* expression){
+  //used as the output for the postfix token sequence
   TokenList* postExpression = CreateTokenList();
+  //stack to push operators on
   Stack* stack = CreateStack();
 
+  //string for the next token
   char* tokString;
   const char* delim = " \t\n";
   char firstCh;
@@ -274,6 +296,19 @@ static void performOperation(Token* operator,
     break;
   case '%':
     if(isFloat){
+      if(verifyModulo(operand1, operand2)){
+	operator->value.iVal =
+	  (int) operand1->value.fVal %
+	  (int) operand2->value.fVal;
+	operator->valType = Integer;
+      }
+      else{
+	operator->valType = Unknown;
+	fprintf(stderr, "Error: modulo operator used on float operands %f and %f\n",
+		operand1->value.fVal,
+		operand2->value.fVal);
+	return;
+      }
     }
     else{
       operator->value.iVal =
@@ -320,6 +355,13 @@ Token* evaluateExpression(SymbolTable* table, char* expression){
       operand1 = (Token*) PopStack(stack);
       //perform operation and store value in operator token
       performOperation(token, operand1, operand2);
+      
+      if(token->valType == Unknown){
+	DestroyTokenList(postExpression);
+	DestroyStack(stack);
+	return NULL;
+      }
+	
       //operator token now has new value; push it onto the stack
       PushStack(stack, (void*) token);
       }

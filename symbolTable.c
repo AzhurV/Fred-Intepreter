@@ -2,8 +2,8 @@
 ///description: functions for the symbol table of the Fred interpreter
 ///author: avv8047 : Azhur Viano
 
-#include "symbolTable.h"
 
+#include "symbolTable.h"
 
 
 ///Create a new empty symbol table
@@ -41,7 +41,6 @@ void DestroyTable(SymbolTable* table){
   free(table);
 }
     
-
 
 ///Add a new symbol to the table
 ///@param table the table to add a symbol to
@@ -112,7 +111,7 @@ int updateSymbol(SymbolTable* table, Symbol* symbol){
 Symbol* GetSymbol(SymbolTable* table, char* name){
   SymbolNode* cur = table->head;
   while(cur){
-if(strncmp(cur->symbol->name, name, MAX_SYM_LEN ) == 0){
+if(strncmp(cur->symbol->name, name, MAX_SYM_LEN) == 0){
       return cur->symbol;
     }
     cur = cur->next;
@@ -120,6 +119,7 @@ if(strncmp(cur->symbol->name, name, MAX_SYM_LEN ) == 0){
 
   return NULL;
 }
+
 
 ///Print the symbol table contents to stdout
 ///@param table a pointer to the table to print

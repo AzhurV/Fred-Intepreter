@@ -1,54 +1,75 @@
+///file:processor.c
+///description:functions for reading and executing Fred program
+///  statements
+///@author: avv8047 : Azhur Viano
+
+
 #include "processor.h"
 
 //constants for boolean operators in if statements
 typedef enum bool_ops {GT, LT, EQ}
   BoolOperator;
 
+//Round a float to an int using the even rounding method
+//@param f the float number to round
+//@returns f rounded to an integer using even rounding
 static int roundEven(float f){
+  //decimal part of the float
   float diff = f - (int) f;
+  //used to round number away from 0
   int addend = 1;
 
   //make diff positive
   if(diff < 0){
     diff *= -1.0f;
+    //addend must be negative to round a negative number away from 0
     addend = -1;
   }
-  
+
+  //round towards zero
   if(diff < 0.5f){
     return (int) f;
   }
+  
+  //round away from 0
   else if(diff > 0.5f){
     return (int) (f + addend);
   }
+  
+  //round to the nearest even int
   else{
-    int remainder = ((int) (f + 1.0f)) % 2;
+    int remainder = ((int) (f + addend)) % 2;
+
+    //integer towards 0 is even, so round to that
     if(remainder){
-      return (int) (f - addend);
+      return (int) f;
     }
+    //integer away from 0 is even, so round to that
     else{
       return (int) (f + addend);
     }
   }
 }
 
+
 //Process a file of symbols and store them in the table
+//@param table the table to store symbols in
+//@param symbolfile the filestream to read symbols from
 void processSymbolFile(SymbolTable* table, FILE* symbolFile){
   const char* delim = " \t";
   char* line = NULL;
   size_t len = 0;
 
-  
   Symbol* symbol;
   
   char* tok;
-
   
 
   while(getline(&line, &len, symbolFile) != -1){
     symbol = malloc(sizeof(Symbol));
 
     tok = strtok(line, delim);
-
+ 
     if(strcmp("integer", tok) == 0){
       symbol->type = Integer;
     }
@@ -245,6 +266,7 @@ static int processIf(SymbolTable* table, char* clause){
     isFloat = 1;
   }
 
+  //TODO: move this checking to evaluate.c
   //perform comparision and set returnVal
   switch(operator){
   case EQ:
@@ -277,7 +299,7 @@ static int processIf(SymbolTable* table, char* clause){
 
   free(leftResult);
   free(rightResult);
-  //! operator, so invert truth value
+  //if ! was used, invert the truth value
   if(invert){
     return (!returnVal);
   }
@@ -416,29 +438,29 @@ static void executeStatement(SymbolTable* table, char* statement){
 }
 
 
-  ///Process statements from an input stream
-  ///@param table the symbol table to use while processing
-  ///@param input the input stream to read from
-  void processStatements(SymbolTable* table, FILE* input){
-    char* line = NULL;
-    size_t len = 0;
+///Process statements from an input stream
+///@param table the symbol table to use while processing
+///@param input the input stream to read from
+void processStatements(SymbolTable* table, FILE* input){
+  char* line = NULL;
+  size_t len = 0;
   
-    printf(">");
+  printf(">");
 
-    //get lines from input; lines are dynamically allocated by getline
-    while(getline(&line, &len, input) != -1){
-      printf(":::%s\n", line);
+  //get lines from input; lines are dynamically allocated by getline
+  while(getline(&line, &len, input) != -1){
+    printf(":::%s\n", line);
 
-      executeStatement(table, line);
+    executeStatement(table, line);
 
-      //free dynamically allocated line
-      free(line);
-      line = NULL;
-
-      printf(">");
-    }
-
+    //free dynamically allocated line
     free(line);
+    line = NULL;
 
-    return;
+    printf(">");
   }
+
+  free(line);
+
+  return;
+}

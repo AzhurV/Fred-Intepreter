@@ -1,3 +1,8 @@
+///file:symbolTable.h
+///description:interface for a symbol table
+///author: avv8047 : Azhur Viano
+
+
 #ifndef SYM_TABLE_H
 #define SYM_TABLE_H
 
@@ -6,6 +11,7 @@
 #include <string.h>
 
 #define MAX_SYM_LEN 7
+
 
 ///Types a symbol can have
 typedef enum types_enum {
