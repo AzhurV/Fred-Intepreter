@@ -59,8 +59,6 @@ static void AddToken(TokenList* tokList, Token* token){
 
 
 //Check whether a string is a float
-//@param str a null terminated string
-//@returns 1 if the string is a float, 0 otherwise
 int isFloat(char* str){
   int i;
 
@@ -325,10 +323,7 @@ static void performOperation(Token* operator,
 }
 
 
-//Evaluate an infix expression
-//@param table the symbol table to use
-//@returns a token struct  containing an int or float,
-//  or NULL if the evaluation failed
+//Evaluate an arithmetic expression and return the result as a token
 Token* evaluateExpression(SymbolTable* table, char* expression){
   
   TokenList* postExpression = convertToPostfix(table, expression);
@@ -355,7 +350,8 @@ Token* evaluateExpression(SymbolTable* table, char* expression){
       operand1 = (Token*) PopStack(stack);
       //perform operation and store value in operator token
       performOperation(token, operand1, operand2);
-      
+
+      //error in operation, free all memory and return NULL to indicate error
       if(token->valType == Unknown){
 	DestroyTokenList(postExpression);
 	DestroyStack(stack);

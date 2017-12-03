@@ -16,13 +16,18 @@
 #define INITIAL_SIZE 20
 
 
+//Types for a token, used for converting to postfix
 typedef enum token_type {Operator, Operand, LParenthesis,
 RParenthesis} TokenType;
 
 
+//Token for an operand, operator, or parantheses
 typedef struct Token_ {
+  //type of the toke, operand, operator, or parenthesis
   TokenType type;
+  //type of value, Float or Integer
   Type valType;
+  //value of the token
   Value value;
 } Token;
 

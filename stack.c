@@ -9,8 +9,7 @@
 #define INITIAL_CAPACITY 20
 
 
-///Create a new empty stack
-///@returns a pointer to the new empty stack
+///Create a new stack
 Stack* CreateStack(void){
   Stack* stack = malloc(sizeof(Stack));
   stack->size = 0;
@@ -21,24 +20,21 @@ Stack* CreateStack(void){
 }
 
 
-///Delete the stack
-///@param stack pointer to the stack to be deleted
+///Destroy a stack
 void DestroyStack(Stack* stack){
   free(stack->data);
   free(stack);
   return;
 }
 
-///Check whether the stack is empty
-///@param stack a pointer to the stack to check
-///@returns whether or not the stack is empty
+
+///Check whether a stack is empty
 int EmptyStack(Stack* stack){
   return (stack->size == 0);
 }
 
 
-///Pop the top element of the stack
-///@param stack a pointer to the stack to op from
+///Pop the top of the stack and return it
 void* PopStack(Stack* stack){
   void* data;
   
@@ -51,9 +47,7 @@ void* PopStack(Stack* stack){
 }
 
 
-///Push an element onto the stack
-///@param stack a pointer to the stack
-///@param data the data to push
+///Push onto the top of the stack
 void PushStack(Stack* stack, void* data){
   if(stack->size == stack->capacity){
     stack->data = realloc(stack->data, stack->size * 2);

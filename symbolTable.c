@@ -6,8 +6,7 @@
 #include "symbolTable.h"
 
 
-///Create a new empty symbol table
-///@returns a pointer to the new symbol table
+///Create a new table
 SymbolTable* CreateTable(void){
   SymbolTable* table = malloc(sizeof(SymbolTable));
   
@@ -17,6 +16,7 @@ SymbolTable* CreateTable(void){
   return table;
 }
 
+
 ///Free all memory associated with a symbol
 ///@param symbol a pointer to the symbol to free
 static void DestroySymbol(Symbol* symbol){
@@ -25,8 +25,8 @@ static void DestroySymbol(Symbol* symbol){
   return;
 }
 
-///Free all memory associated with a table
-///@param table a pointer to the table to free
+
+///Destroy a table
 void DestroyTable(SymbolTable* table){
   SymbolNode* cur = table->head;
   SymbolNode* next;
@@ -42,11 +42,7 @@ void DestroyTable(SymbolTable* table){
 }
     
 
-///Add a new symbol to the table
-///@param table the table to add a symbol to
-///@param symbol a pointer to the symbol to add
-///@returns 1 if the symbol was successfully added, 0 if
-///  the symbol already existed in the table
+///Add a symbol to the table
 int AddSymbol(SymbolTable* table, Symbol* symbol){
   SymbolNode* cur = table->head;
   SymbolNode* newNode = malloc(sizeof(SymbolNode));
@@ -84,10 +80,6 @@ int AddSymbol(SymbolTable* table, Symbol* symbol){
   
 
 ///Update a symbol in the table
-///@param table a pointer to the symbol table
-///@param symbol a pointer to the symbol to update, including
-///  the new symbol information
-///@returns 1 if updated successfully, 0 if the symbol was not found
 int updateSymbol(SymbolTable* table, Symbol* symbol){
   SymbolNode* cur = table->head;
 
@@ -104,10 +96,7 @@ int updateSymbol(SymbolTable* table, Symbol* symbol){
 }
 
 
-///Retrieve a symbol from the table
-///@param table a pointer to the symbol table
-///@param name the name of the symbol to get
-///@returns a pointer to the symbol if found, or NULL otherwise
+///Get a symbol from the table
 Symbol* GetSymbol(SymbolTable* table, char* name){
   SymbolNode* cur = table->head;
   while(cur){
@@ -121,8 +110,7 @@ if(strncmp(cur->symbol->name, name, MAX_SYM_LEN) == 0){
 }
 
 
-///Print the symbol table contents to stdout
-///@param table a pointer to the table to print
+///Dump the table and its contents to standard output
 void dumpTable(SymbolTable* table){
   SymbolNode* cur = table->head;
 

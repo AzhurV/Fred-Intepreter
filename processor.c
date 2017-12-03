@@ -10,9 +10,10 @@
 typedef enum bool_ops {GT, LT, EQ}
   BoolOperator;
 
-//Round a float to an int using the even rounding method
-//@param f the float number to round
-//@returns f rounded to an integer using even rounding
+
+///Round a float to an int using the even rounding method
+///@param f the float number to round
+///@returns f rounded to an integer using even rounding
 static int roundEven(float f){
   //decimal part of the float
   float diff = f - (int) f;
@@ -52,9 +53,8 @@ static int roundEven(float f){
 }
 
 
-//Process a file of symbols and store them in the table
-//@param table the table to store symbols in
-//@param symbolfile the filestream to read symbols from
+///Process a symbol file, storing the symbols and their values
+///  in the table
 void processSymbolFile(SymbolTable* table, FILE* symbolFile){
   const char* delim = " \t";
   char* line = NULL;
@@ -118,6 +118,11 @@ static void processDefine(SymbolTable* table){
 
   tok = strtok(NULL, delim);
 
+  if(!tok){
+    fprintf(stderr, "define error: no type or variable provided\n");
+    return;
+  }
+
   if(strcmp("integer", tok) == 0){
     type = Integer;
   }
@@ -130,13 +135,6 @@ static void processDefine(SymbolTable* table){
   }
 
   while((tok = strtok(NULL, delim)) != NULL){
-    //move past white space and commas or quit if we reach the end
-    while(tok && !tok[0]){
-      tok = strtok(NULL, delim);
-    }
-    if(tok == NULL){
-      return;
-    }
     symbol = malloc(sizeof(Symbol));
     symbol->name = strndup(tok, MAX_SYM_LEN);
     symbol->type = type;
@@ -167,6 +165,12 @@ static void processLet(SymbolTable* table, char* expression){
   Token* returnToken;
 
   tok = strtok(expression, delim);
+
+  if(!tok){
+    fprintf(stderr, "Error: no symbol provided to let\n");
+    return;
+  }
+  
   symbol = GetSymbol(table, tok);
 
   if(!symbol){
@@ -209,10 +213,10 @@ static void processLet(SymbolTable* table, char* expression){
 }
 
 
-//Process an if statement
-//@param table a pointer to the symbol table to use
-//@param clause the conditional clause to use
-//@returns 1 if statement is true, else 0 
+///Process an if statement
+///@param table a pointer to the symbol table to use
+///@param clause the conditional clause to use
+///@returns 1 if statement is true, else 0 
 static int processIf(SymbolTable* table, char* clause){
   char* compOperator = clause;
   BoolOperator operator;
@@ -266,8 +270,7 @@ static int processIf(SymbolTable* table, char* clause){
     isFloat = 1;
   }
 
-  //TODO: move this checking to evaluate.c
-  //perform comparision and set returnVal
+  
   switch(operator){
   case EQ:
     if(isFloat){
@@ -316,10 +319,39 @@ static void processPrint(void){
   if(!str){
     return;
   }
-  
-  int i;
 
-  for(i = 0; str[i] != '\0'; i++){
+  int end = strlen(str) - 1;
+  int i = 0;
+
+  while(str[i] == ' ' || str[i] == '\t'){
+    i++;
+  }
+
+  if(strncmp(str + i, "\'\"\'", 3) != 0 &&
+     strncmp(str + i, "\'\'\'", 3) != 0){
+    fprintf(stderr, "Error: No quotes found at beginning of print string\n");
+    return;
+  }
+
+  i += 3;
+
+  while(str[end] == ' ' || str[end] == '\t'){
+    end--;
+  }
+
+  end -= 2;
+
+
+  if(strncmp(str + end, "\'\"\'", 3) != 0 &&
+     strncmp(str + end, "\'\'\'", 3) != 0){
+    fprintf(stderr, "Error: no quotes found at end of print string\n");
+    return;
+  }
+  end--;
+
+  
+
+  for(; i <= end; i++){
     if(str[i] == '\\'){
       i++;
       switch(str[i]){
@@ -345,9 +377,9 @@ static void processPrint(void){
 }
 
 
-//Process a display statement
-//@param table a pointer to the symbol table to use
-//@param expression the string containing the elements to display
+///Process a display statement
+///@param table a pointer to the symbol table to use
+///@param expression the string containing the elements to display
 static void processDisplay(SymbolTable* table, char* expression){
   char* delim = " \t,\n";
 
@@ -438,9 +470,8 @@ static void executeStatement(SymbolTable* table, char* statement){
 }
 
 
-///Process statements from an input stream
-///@param table the symbol table to use while processing
-///@param input the input stream to read from
+
+///Process Fred statements from an input
 void processStatements(SymbolTable* table, FILE* input){
   char* line = NULL;
   size_t len = 0;
@@ -459,6 +490,7 @@ void processStatements(SymbolTable* table, FILE* input){
 
     printf(">");
   }
+  printf("\n");
 
   free(line);
 

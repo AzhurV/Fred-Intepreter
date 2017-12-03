@@ -1,0 +1,101 @@
+commit cd2a155ff171bb0deccd9bfa591d5e8d3cff9f8a
+Author: Azhur Victor Viano <avv8047@cs.rit.edu>
+Date:   Mon Nov 27 14:02:39 2017 -0500
+
+    Added error checking for modulo used on float operands
+
+commit 29f1256ed538c4ae322483595bf5977f954bf486
+Author: Azhur Victor Viano <avv8047@cs.rit.edu>
+Date:   Wed Nov 22 20:56:24 2017 -0500
+
+    Limited length of symbol names to 7 characters plus terminating null byte
+
+commit 5fc10ba61f372bd430d63c83b5cfcfc394e5c8ba
+Author: Azhur Victor Viano <avv8047@cs.rit.edu>
+Date:   Wed Nov 22 19:54:14 2017 -0500
+
+    Fixed a small bug in rounding negative floating point values
+
+commit e18cee98ff8430d1aae01dfb16b2cc74cc21eb87
+Author: Azhur Victor Viano <avv8047@cs.rit.edu>
+Date:   Wed Nov 22 19:48:57 2017 -0500
+
+    Fixed a bug in converting floating point results to int for assignment to symbols of type integer and added support for even rounding
+
+commit d0799f7aeab0936e1e819f71a99af1da75ec5883
+Author: Azhur Victor Viano <avv8047@cs.rit.edu>
+Date:   Wed Nov 22 11:04:49 2017 -0500
+
+    Added support for display statements
+
+commit 546c1a88a706e80d4c06443352e6fd973bcf49b7
+Author: Azhur Victor Viano <avv8047@cs.rit.edu>
+Date:   Tue Nov 21 19:19:44 2017 -0500
+
+    Completed implementation of processing if and then statements
+
+commit c49e5f7db773b62aae157a631c22ed7376b3a4b5
+Author: Azhur Victor Viano <avv8047@cs.rit.edu>
+Date:   Tue Nov 21 18:21:42 2017 -0500
+
+    Changed usage of strtok function in processing to make code cleaner and more modular
+
+commit 140cfbc01c46bfae1f091bca70141dc6b71bcf29
+Author: Azhur Victor Viano <avv8047@cs.rit.edu>
+Date:   Tue Nov 21 12:34:42 2017 -0500
+
+    Completed implementation of processing arithmetic expressions for let statements
+
+commit 6478b9e6421a0cc8a0cf582b51df9d8ecb6fb472
+Author: Azhur Victor Viano <avv8047@cs.rit.edu>
+Date:   Tue Nov 21 10:06:27 2017 -0500
+
+    Completed implementation of converting infix to postfix
+
+commit 20b047362955cc189a1fc642795794f093d2daca
+Author: Azhur Victor Viano <avv8047@cs.rit.edu>
+Date:   Mon Nov 20 18:04:14 2017 -0500
+
+    Started implementing support for evaluation of arithmetic expressions
+
+commit f85816bb7dd6845458739121e2f09787845d9e21
+Author: Azhur Victor Viano <avv8047@cs.rit.edu>
+Date:   Mon Nov 20 10:15:55 2017 -0500
+
+    Added support for define statements
+
+commit d591107c77e6a98579a6b7b4b0ee3cd367825761
+Author: Azhur Victor Viano <avv8047@cs.rit.edu>
+Date:   Mon Nov 20 09:43:42 2017 -0500
+
+    Added destructors for symbol table
+
+commit 65cb16350a0177875b999eeeeaffd48a77ce6e4c
+Author: Azhur Victor Viano <avv8047@cs.rit.edu>
+Date:   Mon Nov 20 09:07:37 2017 -0500
+
+    Implemented reading of symbols into table from a file
+
+commit d8d6b12fc1c127f7674ac97f4b36544644c3db07
+Author: Azhur Victor Viano <avv8047@cs.rit.edu>
+Date:   Sun Nov 19 18:52:40 2017 -0500
+
+    Added dump function to symbol table and started implementation of main program file
+
+commit a788a0cc37d6a0796ce0a850162455c5c22648e6
+Author: Azhur Victor Viano <avv8047@cs.rit.edu>
+Date:   Sun Nov 19 10:04:40 2017 -0500
+
+    Completed basic implementation of the symbol table
+
+commit a0d3064098bda3801a23b2d1fcb56f18d5b433c1
+Author: Azhur Victor Viano <avv8047@cs.rit.edu>
+Date:   Sun Nov 19 08:42:10 2017 -0500
+
+    Switched from hash table to a sorted linked list for implementation of symbol table
+
+commit 448012f40a30f1f4888b31ac921300d583d91a5d
+Author: Azhur Victor Viano <avv8047@cs.rit.edu>
+Date:   Sat Nov 18 20:01:31 2017 -0500
+
+    Downloaded project files and completed implementation of stack and hash table data types

@@ -65,8 +65,11 @@ void DestroyTable(SymbolTable* table);
 int AddSymbol(SymbolTable* table, Symbol* symbol);
 
 
-
-Symbol* GetSymbol(SymbolTable*, char*);
+///Get a symbol from the table
+///@param table a pointer to the symbol table to search
+///@param name the name of the symbol to retrieve
+///@returns the symbol if found, NULL otherwise
+Symbol* GetSymbol(SymbolTable* table, char* name);
 
 
 ///Print the symbol table contents to stdout
