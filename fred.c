@@ -24,7 +24,7 @@ void printUsage(){
 
 //Set up symbol table, reading symbols from the symbol file if provided, 
 //  and then process statements from standard input or
-//  a program fileif provided
+//  a program file if provided
 int main(int argc, char** argv){
   //used to store options from getop
   int c;

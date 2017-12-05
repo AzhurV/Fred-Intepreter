@@ -6,6 +6,13 @@
 #include "evaluate.h"
 
 
+//default buffer size for string allocated in seperateString
+#define DEFAULT_SIZE 30
+//amount to increment buffer when reallocing
+#define SIZE_INC 10
+
+
+
 //struct to represent a sequence of tokens
 typedef struct TokenList_ {
   //sequence of tokens
@@ -41,7 +48,6 @@ static void DestroyTokenList(TokenList* tokList){
   return;
 }
 
-
 //Add a token to the list
 //@param tokList the list of tokens to add to
 //@param token the token to add
@@ -68,6 +74,49 @@ int isFloat(char* str){
     }
   }
   return 0;
+}
+
+
+///Seperate the operands and operators/parentheses with whitespace in the string
+///@param str the string to seperate
+///@returns a dynamically allocated copy of str with seperated operators and operands
+static char* seperateString(const char* str){
+  int i;
+  int j;
+  int size = DEFAULT_SIZE;
+
+  char* dest = (char*) malloc(sizeof(char) * size);
+
+  for(i = 0, j = 0; str[i]; i++){
+    //each iteration adds at most 3 characters to dest string, so we make
+    //  sure there is enough space before adding anything
+    if(j >= size - 4){
+      size += SIZE_INC;
+      dest = (char*) realloc((void*) dest, size);
+  }
+    if(str[i] == '('){
+      dest[j++] = '(';
+      if(str[i + 1] != ' '){
+	dest[j++] = ' ';
+      }
+    }
+    else if(str[i] == ')'){
+      if(dest[j - 1] != ' '){
+	dest[j++] = ' ';
+      }
+      dest[j++] = ')';
+      if(str[i + 1] && str[i + 1] != ' '){
+	dest[j++] = ' ';
+      }
+    }
+    else{
+      dest[j++] = str[i];
+    }
+  }
+
+  dest[j] = '\0';
+
+  return dest;
 }
 
 
@@ -113,10 +162,11 @@ static TokenList* convertToPostfix(SymbolTable* table, char* expression){
   for(tokString = strtok(expression, delim);
       tokString;
       tokString = strtok(NULL, delim)){
+    
     firstCh = tokString[0];
     token = malloc(sizeof(Token));
-      
 
+    
     //token is a number
     if(isdigit(firstCh)){
       token->type = Operand;
@@ -325,8 +375,11 @@ static void performOperation(Token* operator,
 
 //Evaluate an arithmetic expression and return the result as a token
 Token* evaluateExpression(SymbolTable* table, char* expression){
+  char* processedExp = seperateString(expression);
   
-  TokenList* postExpression = convertToPostfix(table, expression);
+  TokenList* postExpression = convertToPostfix(table, processedExp);
+
+  free(processedExp);
 
   //error converting to postfix; return
   if(!postExpression){

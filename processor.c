@@ -311,6 +311,52 @@ static int processIf(SymbolTable* table, char* clause){
 }
 
 
+///Validate that a print string is enclosed in quotes. Place a null terminator at the closing quote
+///  and return the index of the beginning of the string if the string is properly quoted
+///@parameter the ascii string to validate
+///@returns the starting position of the string, or -1 if the string is not properly quoted
+static int validatePrtString(char* str){
+  int i = 0;
+  int start;
+  char mark;
+
+  //move past whitespace
+  while(str[i] == ' ' || str[i] == '\t'){
+    i++;
+  }
+
+  mark = str[i];
+  if(mark != '\'' && mark != '\"'){
+    //no quote at beginning
+    fprintf(stderr, "Error: no opening quotes for print statement string\n");
+    return -1;
+  }
+
+  i++;
+  //save start index of actual string
+  start = i;
+  
+  while(str[i] != '\'' && str[i] != '\"'){
+    if(!str[i]){
+      //no quote at end
+      fprintf(stderr, "Error: no closing quotes for print statement string\n");
+      return -1;
+    }
+    i++;
+  }
+
+  if(mark != str[i]){
+    //quotes don't match
+    fprintf(stderr, "Error: mismatching quotes in print statement\n");
+    return -1;
+  }
+
+  //null terminate to mark the end of the string
+  str[i] = '\0';
+  
+  return start;
+}
+
 
 ///Process a print statement
 static void processPrint(void){
@@ -320,55 +366,37 @@ static void processPrint(void){
     return;
   }
 
-  int end = strlen(str) - 1;
-  int i = 0;
+  int i = validatePrtString(str);
 
-  while(str[i] == ' ' || str[i] == '\t'){
-    i++;
-  }
-
-  if(strncmp(str + i, "\'\"\'", 3) != 0 &&
-     strncmp(str + i, "\'\'\'", 3) != 0){
-    fprintf(stderr, "Error: No quotes found at beginning of print string\n");
+  if(i == -1){
     return;
   }
 
-  i += 3;
+    
 
-  while(str[end] == ' ' || str[end] == '\t'){
-    end--;
-  }
-
-  end -= 2;
-
-
-  if(strncmp(str + end, "\'\"\'", 3) != 0 &&
-     strncmp(str + end, "\'\'\'", 3) != 0){
-    fprintf(stderr, "Error: no quotes found at end of print string\n");
-    return;
-  }
-  end--;
-
-  
-
-  for(; i <= end; i++){
+  for(; str[i]; i++){
     if(str[i] == '\\'){
       i++;
       switch(str[i]){
       case 'n':
+	//newline escape
 	putchar((unsigned char) '\n');
 	break;
       case 't':
+	//tab escape
 	putchar((unsigned char) '\t');
 	break;
       case '\\':
+	//backslack escape
 	putchar((unsigned char) '\t');
 	break;
       default:
+	//unknown escape; just print a space
 	putchar((unsigned char) ' ');
       }
     }
     else{
+      //normal ASCII character, just put on the output stream
       putchar((unsigned char) str[i]);
     }
   }
@@ -381,15 +409,20 @@ static void processPrint(void){
 ///@param table a pointer to the symbol table to use
 ///@param expression the string containing the elements to display
 static void processDisplay(SymbolTable* table, char* expression){
+  //delimiters for strtok
   char* delim = " \t,\n";
 
   char* tokString;
 
-  int multiplier = 1;
+  //used for correctly printing negative constants
+  int multiplier;
 
   for(tokString = strtok(expression, delim);
       tokString;
       tokString = strtok(NULL, delim)){
+    //reset multiplier each time
+    multiplier = 1;
+    
     //token is a variable identifier
     if(isalpha(tokString[0])){
       Symbol* symbol = GetSymbol(table, tokString);
@@ -405,17 +438,19 @@ static void processDisplay(SymbolTable* table, char* expression){
 	fprintf(stderr, "\nError: symbol %s not found in symbol table\n", tokString);
       }
     }
-    //token is a number
+    //token is a numeric constant
     else if(isdigit(tokString[0]) || tokString[0] == '-'){
       if(tokString[0] == '-'){
 	multiplier = -1;
 	tokString++;
       }
       if(isFloat(tokString)){
+	//float constant
 	float fval = atof(tokString);
         printf(" %.3f ", multiplier * fval);
       }
       else{
+	//integer constant
 	int ival = atoi(tokString);
 	printf(" %d ", multiplier * ival);
       }
@@ -428,7 +463,9 @@ static void processDisplay(SymbolTable* table, char* expression){
   return;
 }
 
-
+///Execute a Fred statement
+///@param table the symbol table to use
+///@param statement the statement to execute
 static void executeStatement(SymbolTable* table, char* statement){
 
   const char* delim = " \t\n";
