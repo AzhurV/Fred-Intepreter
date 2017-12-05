@@ -335,16 +335,14 @@ static int validatePrtString(char* str){
   i++;
   //save start index of actual string
   start = i;
-
-  i = strlen(str - 1);
   
-  while(str[i] == ' ' || str[i] == '\t'){
+  while(str[i] != '\'' && str[i] != '\"'){
+    if(!str[i]){
+      //no quote at end
+      fprintf(stderr, "Error: no closing quotes for print statement string\n");
+      return -1;
+    }
     i++;
-  }
-  
-  if(str[i] != '\'' && str[i] != '\"'){
-    fprintf(stderr, "Error: no closing quotes for print statement string\n");
-    return -1;
   }
 
   if(mark != str[i]){

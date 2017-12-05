@@ -64,7 +64,7 @@ static void AddToken(TokenList* tokList, Token* token){
 }
 
 
-//Check whether a string is a float
+//Check whether a number as a string is a float
 int isFloat(char* str){
   int i;
 
@@ -75,7 +75,6 @@ int isFloat(char* str){
   }
   return 0;
 }
-
 
 ///Seperate the operands and operators/parentheses with whitespace in the string
 ///@param str the string to seperate
