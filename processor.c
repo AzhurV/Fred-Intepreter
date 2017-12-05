@@ -88,10 +88,10 @@ void processSymbolFile(SymbolTable* table, FILE* symbolFile){
     tok = strtok(NULL, delim);
     
     if(symbol->type == Integer){
-      symbol->value.iVal = atoi(tok);
+      symbol->value.iVal = (int) strtol(tok, NULL, 10);
     }
     else if(symbol->type == Float){
-      symbol->value.fVal = atof(tok);
+      symbol->value.fVal = strtof(tok, NULL);
     }
 
     AddSymbol(table, symbol);
@@ -446,12 +446,12 @@ static void processDisplay(SymbolTable* table, char* expression){
       }
       if(isFloat(tokString)){
 	//float constant
-	float fval = atof(tokString);
+	float fval = strtof(tokString, NULL);
         printf(" %.3f ", multiplier * fval);
       }
       else{
 	//integer constant
-	int ival = atoi(tokString);
+	int ival = (int) strtol(tokString, NULL, 10);
 	printf(" %d ", multiplier * ival);
       }
     }
@@ -462,6 +462,7 @@ static void processDisplay(SymbolTable* table, char* expression){
   printf("\n");
   return;
 }
+
 
 ///Execute a Fred statement
 ///@param table the symbol table to use

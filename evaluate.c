@@ -84,16 +84,20 @@ static char* seperateString(const char* str){
   int i;
   int j;
   int size = DEFAULT_SIZE;
+ 
 
+  //buffer to store the seperated string into
   char* dest = (char*) malloc(sizeof(char) * size);
 
   for(i = 0, j = 0; str[i]; i++){
+    
     //each iteration adds at most 3 characters to dest string, so we make
     //  sure there is enough space before adding anything
     if(j >= size - 4){
       size += SIZE_INC;
       dest = (char*) realloc((void*) dest, size);
   }
+        
     if(str[i] == '('){
       dest[j++] = '(';
       if(str[i + 1] != ' '){
@@ -114,8 +118,8 @@ static char* seperateString(const char* str){
     }
   }
 
+  //terminate the destination string and return
   dest[j] = '\0';
-
   return dest;
 }
 
@@ -172,11 +176,11 @@ static TokenList* convertToPostfix(SymbolTable* table, char* expression){
       token->type = Operand;
       if(isFloat(tokString)){
 	token->valType = Float;
-	token->value.fVal = atof(tokString);
+	token->value.fVal = strtof(tokString, NULL);
       }
       else{
 	token->valType = Integer;
-	token->value.iVal = atoi(tokString);
+	token->value.iVal = (int) strtol(tokString, NULL, 10);
       }
       AddToken(postExpression, token);
     }
