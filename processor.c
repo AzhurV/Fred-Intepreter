@@ -232,7 +232,7 @@ static int processIf(SymbolTable* table, char* clause){
 
   if(*compOperator == '!'){
     invert = 1;
-    compOperator = '\0';
+    *compOperator = '\0';
     compOperator++;
   }
   switch(*compOperator){
@@ -251,8 +251,9 @@ static int processIf(SymbolTable* table, char* clause){
   }
 
   *compOperator = '\0';
-  compOperator += 2;
+  compOperator++;
 
+  
   Token* leftResult = evaluateExpression(table, clause);
   Token* rightResult = evaluateExpression(table, compOperator);
   int isFloat = 0;
@@ -336,7 +337,7 @@ static int validatePrtString(char* str){
   //save start index of actual string
   start = i;
 
-  i = strlen(str - 1);
+  i = strlen(str) - 1;
   
   while(str[i] == ' ' || str[i] == '\t'){
     i++;
@@ -373,7 +374,6 @@ static void processPrint(void){
   if(i == -1){
     return;
   }
-
     
 
   for(; str[i]; i++){
@@ -469,6 +469,12 @@ static void executeStatement(SymbolTable* table, char* statement){
 
   const char* delim = " \t\n";
   char* tok = strtok(statement, delim);
+  
+  if(!tok){
+    return;
+  }
+
+  
 
   if(strcmp("define", tok) == 0){
     processDefine(table);
@@ -518,7 +524,9 @@ void processStatements(SymbolTable* table, FILE* input){
   while(getline(&line, &len, input) != -1){
     printf(":::%s\n", line);
 
-    executeStatement(table, line);
+    if(strnlen(line, 1) != 0){
+      executeStatement(table, line);
+    }
 
     //free dynamically allocated line
     free(line);
@@ -526,6 +534,7 @@ void processStatements(SymbolTable* table, FILE* input){
 
     printf(">");
   }
+  
   printf("\n");
 
   free(line);

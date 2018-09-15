@@ -77,23 +77,7 @@ int AddSymbol(SymbolTable* table, Symbol* symbol){
 
   return 1;
 }
-  
 
-///Update a symbol in the table
-int updateSymbol(SymbolTable* table, Symbol* symbol){
-  SymbolNode* cur = table->head;
-
-  while(cur){
-    if(strcmp(cur->symbol->name, symbol->name) == 0){
-      free(cur->symbol);
-      cur->symbol = symbol;
-      return 1;
-    }
-    cur = cur->next;
-  }
-
-  return 0;
-}
 
 
 ///Get a symbol from the table

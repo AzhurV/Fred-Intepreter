@@ -11,6 +11,9 @@
 //amount to increment buffer when reallocing
 #define SIZE_INC 10
 
+#define isOperator(c) (c == '+' || c == '-' || c == '*' || \
+		       c == '/' || c == '%' || c == '(' || c == ')')
+
 
 
 //struct to represent a sequence of tokens
@@ -56,7 +59,7 @@ static void AddToken(TokenList* tokList, Token* token){
   tokList->size++;
 
   if(tokList->size == tokList->capacity){
-    tokList->list = realloc(tokList->list, tokList->capacity * 2);
+    tokList->list = (Token**) realloc(tokList->list, tokList->capacity * 2 * sizeof(Token*));
     tokList->capacity *= 2;
   }
 
@@ -67,7 +70,6 @@ static void AddToken(TokenList* tokList, Token* token){
 //Check whether a number as a string is a float
 int isFloat(char* str){
   int i;
-
   for(i = 0; str[i]; i++){
     if(str[i] == '.'){
       return 1;
@@ -76,11 +78,14 @@ int isFloat(char* str){
   return 0;
 }
 
+
 ///Seperate the operands and operators/parentheses with whitespace in the string
 ///@param str the string to seperate
 ///@returns a dynamically allocated copy of str with seperated operators and operands
 static char* seperateString(const char* str){
+  //index for str
   int i;
+  //index used for the destination to copy to
   int j;
   int size = DEFAULT_SIZE;
  
@@ -88,31 +93,29 @@ static char* seperateString(const char* str){
   //buffer to store the seperated string into
   char* dest = (char*) malloc(sizeof(char) * size);
 
+  
   for(i = 0, j = 0; str[i]; i++){
     
-    //each iteration adds at most 3 characters to dest string, so we make
-    //  sure there is enough space before adding anything
-    if(j >= size - 4){
+    //each iteration adds at most 4 characters to dest string, so we make
+    //  sure there is enough space before moving on to the loop
+    if(j >= size - 5){
       size += SIZE_INC;
-      dest = (char*) realloc((void*) dest, size);
+      dest = (char*) realloc((void*) dest, size * sizeof(char));
   }
-        
-    if(str[i] == '('){
-      dest[j++] = '(';
-      if(str[i + 1] != ' '){
+    //char is an operator or parenthesis
+    if(isOperator(str[i])){
+      //make sure there is a space to the left; if not, add it
+      if(i > 0 && str[i - 1] != ' ' && str[i - 1] != '\t'){
 	dest[j++] = ' ';
       }
-    }
-    else if(str[i] == ')'){
-      if(dest[j - 1] != ' '){
+      dest[j++] = str[i];
+      //make sure there is space to the right; if not, add it
+      if(str[i + 1] && str[i + 1] != ' ' && str[i + 1] != '\t'){
 	dest[j++] = ' ';
-      }
-      dest[j++] = ')';
-      if(str[i + 1] && str[i + 1] != ' '){
-	dest[j++] = ' ';
-      }
+	}
     }
     else{
+      //normal character, no seperating space needed
       dest[j++] = str[i];
     }
   }
